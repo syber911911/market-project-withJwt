@@ -1,1 +1,0 @@
-# MiniProject_Basic_LeeHeejun
