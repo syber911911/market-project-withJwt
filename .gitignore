@@ -152,7 +152,6 @@ Temporary Items
 .gradle
 **/build/
 !src/**/build/
-src/main/resources/application.yaml
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -176,6 +175,6 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
-db.sqlite
-**/src/main/resources/*.sql
+*.sqlite
+application.yaml
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
