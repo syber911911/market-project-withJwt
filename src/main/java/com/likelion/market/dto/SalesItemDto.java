@@ -2,10 +2,7 @@ package com.likelion.market.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.likelion.market.entity.SalesItemEntity;
-import jakarta.persistence.Id;
 import lombok.Data;
-
-import java.util.List;
 
 public class SalesItemDto {
     @Data

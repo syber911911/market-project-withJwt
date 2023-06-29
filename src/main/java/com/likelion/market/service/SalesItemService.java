@@ -46,8 +46,6 @@ public class SalesItemService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
         Page<SalesItemEntity> itemPage = repository.findAll(pageable);
         Page<SalesItemDto.ReadAllResponse> originItemDtoPage = itemPage.map(SalesItemDto.ReadAllResponse::fromEntity);
-
-        PageDto page = new PageDto();
         return PageDto.makePage(originItemDtoPage);
     }
 
