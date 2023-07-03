@@ -73,14 +73,14 @@ public class SalesItemDto {
     }
 
     @Data
-    public static class UpdateUserRequest {
+    public static class User {
         private String writer;
         private String password;
     }
 
     @Data
-    public static class DeleteRequest {
-        private String writer;
-        private String password;
+    public static class UpdateUserRequest {
+        private User recentUser;
+        private User updateUser;
     }
 }

@@ -81,29 +81,48 @@ public class SalesItemService {
     }
 
     // update user
-    public SalesItemDto.Response updateUser(Long itemId, String writer, String password, SalesItemDto.UpdateUserRequest requestDto) {
+    public SalesItemDto.Response updateUser(Long itemId, SalesItemDto.UpdateUserRequest requestDto) {
         Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
         if (optionalItem.isPresent()) {
             SalesItemEntity item = optionalItem.get();
-            if (item.getWriter().equals(writer)) {
-                if (item.getPassword().equals(password)) {
-                    item.setWriter(requestDto.getWriter());
-                    item.setPassword(requestDto.getPassword());
+            if (item.getWriter().equals(requestDto.getRecentUser().getWriter())) {
+                if (item.getPassword().equals(requestDto.getRecentUser().getPassword())) {
+                    item.setWriter(requestDto.getUpdateUser().getWriter());
+                    item.setPassword(requestDto.getUpdateUser().getPassword());
                     repository.save(item);
 
                     SalesItemDto.Response response = new SalesItemDto.Response();
                     response.setMessage("작성자 정보가 수정되었습니다.");
                     return response;
-                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); //  비밀번호 오류
+                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
             } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
         } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
     }
 
+//    public SalesItemDto.Response updateUser(Long itemId, String writer, String password, SalesItemDto.User requestDto) {
+//        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
+//
+//        if (optionalItem.isPresent()) {
+//            SalesItemEntity item = optionalItem.get();
+//            if (item.getWriter().equals(writer)) {
+//                if (item.getPassword().equals(password)) {
+//                    item.setWriter(requestDto.getWriter());
+//                    item.setPassword(requestDto.getPassword());
+//                    repository.save(item);
+//
+//                    SalesItemDto.Response response = new SalesItemDto.Response();
+//                    response.setMessage("작성자 정보가 수정되었습니다.");
+//                    return response;
+//                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); //  비밀번호 오류
+//            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
+//        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
+//    }
+
     // update image
 
     // delete
-    public SalesItemDto.Response deleteItem(Long itemId, SalesItemDto.DeleteRequest requestDto) {
+    public SalesItemDto.Response deleteItem(Long itemId, SalesItemDto.User requestDto) {
         Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
         if (optionalItem.isPresent()) {

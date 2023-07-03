@@ -38,18 +38,23 @@ public class SalesItemController {
         return service.updateItem(itemId, requestDto);
     }
 
-    @PutMapping(value = "/{itemId}", params = {"writer", "password"})
-    public SalesItemDto.Response updateUser(
-            @PathVariable("itemId") Long itemId,
-            @RequestParam(value = "writer", required = true) String writer,
-            @RequestParam(value = "password", required = true) String password,
-            @RequestBody SalesItemDto.UpdateUserRequest requestDto
-    ) {
-        return service.updateUser(itemId, writer, password, requestDto);
+    @PutMapping("/{itemId}/user")
+    public SalesItemDto.Response updateUser(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.UpdateUserRequest requestDto){
+        return service.updateUser(itemId, requestDto);
     }
 
+//    @PutMapping(value = "/{itemId}", params = {"writer", "password"})
+//    public SalesItemDto.Response updateUser(
+//            @PathVariable("itemId") Long itemId,
+//            @RequestParam(value = "writer", required = true) String writer,
+//            @RequestParam(value = "password", required = true) String password,
+//            @RequestBody SalesItemDto.UpdateUserRequest requestDto
+//    ) {
+//        return service.updateUser(itemId, writer, password, requestDto);
+//    }
+
     @DeleteMapping("/{itemId}")
-    public SalesItemDto.Response deleteItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.DeleteRequest requestDto) {
+    public SalesItemDto.Response deleteItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.User requestDto) {
         return service.deleteItem(itemId, requestDto);
     }
 }
