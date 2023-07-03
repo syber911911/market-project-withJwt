@@ -6,14 +6,22 @@ import com.likelion.market.entity.SalesItemEntity;
 import com.likelion.market.repository.SalesItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j
@@ -120,7 +128,43 @@ public class SalesItemService {
 //    }
 
     // update image
+    public SalesItemDto.Response updateItemImage(Long itemId, SalesItemDto.User requestDto, MultipartFile itemImage) {
+        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
+        if (optionalItem.isPresent()) {
+            SalesItemEntity item = optionalItem.get();
+            if (item.getWriter().equals(requestDto.getWriter())) {
+                if (item.getPassword().equals(requestDto.getPassword())) {
+                    String imageDir = "src/main/resources/images/";
+                    try {
+                        Files.createDirectories(Path.of(imageDir));
+                    } catch (IOException e) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                    LocalDateTime createTime = LocalDateTime.now();
+
+                    String originalFileName = itemImage.getOriginalFilename();
+                    String[] fileNameSplit = originalFileName.split("\\.");
+                    String extension = fileNameSplit[fileNameSplit.length - 1];
+                    String itemImageFileName = String.format("%s_%s.%s", createTime.toString(), requestDto.getWriter(), extension);
+                    String itemImagePath = imageDir + itemImageFileName;
+
+                    try {
+                        itemImage.transferTo(Path.of(itemImagePath));
+                    } catch (IOException e) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+
+                    item.setImageUrl(String.format("/static/images/%s", itemImageFileName));
+                    repository.save(item);
+
+                    SalesItemDto.Response response = new SalesItemDto.Response();
+                    response.setMessage("이미지가 등록되었습니다.");
+                    return response;
+                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
+            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
+    }
     // delete
     public SalesItemDto.Response deleteItem(Long itemId, SalesItemDto.User requestDto) {
         Optional<SalesItemEntity> optionalItem = repository.findById(itemId);

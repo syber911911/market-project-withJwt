@@ -177,4 +177,5 @@ gradle-app.setting
 
 *.sqlite
 application.yaml
+src/main/resources/images
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
