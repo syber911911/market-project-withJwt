@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.Optional;
 
 @Slf4j
@@ -58,27 +59,64 @@ public class SalesItemService {
         return SalesItemDto.ReadByIdResponse.fromEntity(optionalItem.get());
     }
 
-    // update
-    public SalesItemDto.Response updateItem(Long itemId, SalesItemDto.UpdateRequest requestDto) {
+    // update item
+    public SalesItemDto.Response updateItem(Long itemId, SalesItemDto.UpdateItemRequest requestDto) {
         Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
         if (optionalItem.isPresent()) {
             SalesItemEntity item = optionalItem.get();
-            if (item.getPassword().equals(requestDto.getPassword())) {
-                item.setTitle(requestDto.getTitle());
-                item.setDescription(requestDto.getDescription());
-                item.setMinPriceWanted(requestDto.getMinPriceWanted());
-                item.setWriter(requestDto.getWriter());
-                repository.save(item);
+            if (item.getWriter().equals(requestDto.getWriter())) {
+                if (item.getPassword().equals(requestDto.getPassword())) {
+                    item.setTitle(requestDto.getTitle());
+                    item.setDescription(requestDto.getDescription());
+                    item.setMinPriceWanted(requestDto.getMinPriceWanted());
+                    repository.save(item);
 
-                SalesItemDto.Response response = new SalesItemDto.Response();
-                response.setMessage("물품이 수정되었습니다.");
-                return response;
-            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+                    SalesItemDto.Response response = new SalesItemDto.Response();
+                    response.setMessage("물품이 수정되었습니다.");
+                    return response;
+                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
+            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
         } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
-    // 이미지 첨부
+    // update user
+    public SalesItemDto.Response updateUser(Long itemId, String writer, String password, SalesItemDto.UpdateUserRequest requestDto) {
+        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
+
+        if (optionalItem.isPresent()) {
+            SalesItemEntity item = optionalItem.get();
+            if (item.getWriter().equals(writer)) {
+                if (item.getPassword().equals(password)) {
+                    item.setWriter(requestDto.getWriter());
+                    item.setPassword(requestDto.getPassword());
+                    repository.save(item);
+
+                    SalesItemDto.Response response = new SalesItemDto.Response();
+                    response.setMessage("작성자 정보가 수정되었습니다.");
+                    return response;
+                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); //  비밀번호 오류
+            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
+    }
+
+    // update image
 
     // delete
+    public SalesItemDto.Response deleteItem(Long itemId, SalesItemDto.DeleteRequest requestDto) {
+        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
+
+        if (optionalItem.isPresent()) {
+            SalesItemEntity item = optionalItem.get();
+            if (item.getWriter().equals(requestDto.getWriter())) {
+                if (item.getPassword().equals(requestDto.getPassword())) {
+                    repository.delete(item);
+
+                    SalesItemDto.Response response = new SalesItemDto.Response();
+                    response.setMessage("물품을 삭제했습니다.");
+                    return response;
+                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
+            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
+    }
 }

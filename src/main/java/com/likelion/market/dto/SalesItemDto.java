@@ -64,10 +64,22 @@ public class SalesItemDto {
     }
 
     @Data
-    public static class UpdateRequest {
+    public static class UpdateItemRequest {
         private String title;
         private String description;
         private Long minPriceWanted;
+        private String writer;
+        private String password;
+    }
+
+    @Data
+    public static class UpdateUserRequest {
+        private String writer;
+        private String password;
+    }
+
+    @Data
+    public static class DeleteRequest {
         private String writer;
         private String password;
     }
