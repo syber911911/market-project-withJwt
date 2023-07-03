@@ -21,6 +21,7 @@ import java.util.Optional;
 public class SalesItemService {
     private final SalesItemRepository repository;
 
+    // create
     public SalesItemDto.Response createItem(SalesItemDto.CreateRequest requestDto) {
         // 중복된 writer 입력에 대한 처리 필요
         if (repository.existsByWriter(requestDto.getWriter())) {
@@ -50,10 +51,34 @@ public class SalesItemService {
     }
 
     // id 조회
-    public SalesItemDto.ReadByIdResponse readItemById(Long id) {
-        Optional<SalesItemEntity> optionalItem = repository.findById(id);
+    public SalesItemDto.ReadByIdResponse readItemById(Long itemId) {
+        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
         if (optionalItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         return SalesItemDto.ReadByIdResponse.fromEntity(optionalItem.get());
     }
+
+    // update
+    public SalesItemDto.Response updateItem(Long itemId, SalesItemDto.UpdateRequest requestDto) {
+        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
+
+        if (optionalItem.isPresent()) {
+            SalesItemEntity item = optionalItem.get();
+            if (item.getPassword().equals(requestDto.getPassword())) {
+                item.setTitle(requestDto.getTitle());
+                item.setDescription(requestDto.getDescription());
+                item.setMinPriceWanted(requestDto.getMinPriceWanted());
+                item.setWriter(requestDto.getWriter());
+                repository.save(item);
+
+                SalesItemDto.Response response = new SalesItemDto.Response();
+                response.setMessage("물품이 수정되었습니다.");
+                return response;
+            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    // 이미지 첨부
+
+    // delete
 }

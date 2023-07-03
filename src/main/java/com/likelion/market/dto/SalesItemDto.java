@@ -62,4 +62,13 @@ public class SalesItemDto {
         private String writer;
         private String password;
     }
+
+    @Data
+    public static class UpdateRequest {
+        private String title;
+        private String description;
+        private Long minPriceWanted;
+        private String writer;
+        private String password;
+    }
 }

@@ -28,9 +28,14 @@ public class SalesItemController {
         return service.readItemPaged(pageNumber > 0 ? pageNumber - 1 : 0, pageSize);
     }
 
-    @GetMapping("/{id}")
-    public SalesItemDto.ReadByIdResponse read(@PathVariable("id") Long id) {
-        return service.readItemById(id);
+    @GetMapping("/{itemId}")
+    public SalesItemDto.ReadByIdResponse read(@PathVariable("itemId") Long itemId) {
+        return service.readItemById(itemId);
+    }
+
+    @PutMapping("/{itemId}")
+    public SalesItemDto.Response update(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.UpdateRequest requestDto) {
+        return service.updateItem(itemId, requestDto);
     }
 }
 
