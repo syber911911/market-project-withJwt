@@ -1,7 +1,9 @@
 package com.likelion.market.controller;
 
 import com.likelion.market.dto.PageDto;
+import com.likelion.market.dto.ResponseDto;
 import com.likelion.market.dto.SalesItemDto;
+import com.likelion.market.dto.UserDto;
 import com.likelion.market.service.SalesItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +20,13 @@ public class SalesItemController {
     private final SalesItemService service;
 
     @PostMapping
-    public SalesItemDto.Response create(@RequestBody SalesItemDto.CreateRequest requestDto) {
+    public ResponseDto create(@RequestBody SalesItemDto.CreateRequest requestDto) {
         return service.createItem(requestDto);
     }
 
     @GetMapping
-    public PageDto readAll(
-            @RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+    public PageDto<SalesItemDto.ReadAllResponse> readAll(
+            @RequestParam(value = "page", defaultValue = "1") Integer pageNumber,
             @RequestParam(value = "limit", defaultValue = "20") Integer pageSize
     ) {
         return service.readItemPaged(pageNumber > 0 ? pageNumber - 1 : 0, pageSize);
@@ -36,11 +38,11 @@ public class SalesItemController {
     }
 
     @PutMapping(value = "/{itemId}/image", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public SalesItemDto.Response updateImage(
+    public ResponseDto updateImage(
             @PathVariable("itemId") Long itemId,
 //            @RequestParam("writer") String writer,
 //            @RequestParam("password") String password,
-            @RequestPart("user") SalesItemDto.User requestDto,
+            @RequestPart("user") UserDto requestDto,
             @RequestPart("image") MultipartFile itemImage
     ){
         log.info("writer : {}, password : {}, image : {}", requestDto.getWriter(), requestDto.getPassword(), itemImage);
@@ -48,17 +50,17 @@ public class SalesItemController {
     }
 
     @PutMapping("/{itemId}")
-    public SalesItemDto.Response updateItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.UpdateItemRequest requestDto) {
+    public ResponseDto updateItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.UpdateItemRequest requestDto) {
         return service.updateItem(itemId, requestDto);
     }
 
     @PutMapping("/{itemId}/user")
-    public SalesItemDto.Response updateUser(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.UpdateUserRequest requestDto){
+    public ResponseDto updateUser(@PathVariable("itemId") Long itemId, @RequestBody UserDto.UpdateUserRequest requestDto){
         return service.updateUser(itemId, requestDto);
     }
 
 //    @PutMapping(value = "/{itemId}", params = {"writer", "password"})
-//    public SalesItemDto.Response updateUser(
+//    public ResponseDto updateUser(
 //            @PathVariable("itemId") Long itemId,
 //            @RequestParam(value = "writer", required = true) String writer,
 //            @RequestParam(value = "password", required = true) String password,
@@ -68,7 +70,7 @@ public class SalesItemController {
 //    }
 
     @DeleteMapping("/{itemId}")
-    public SalesItemDto.Response deleteItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.User requestDto) {
+    public ResponseDto deleteItem(@PathVariable("itemId") Long itemId, @RequestBody UserDto requestDto) {
         return service.deleteItem(itemId, requestDto);
     }
 }

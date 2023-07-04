@@ -6,11 +6,6 @@ import lombok.Data;
 
 public class SalesItemDto {
     @Data
-    public static class Response {
-        String message;
-    }
-
-    @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ReadByIdResponse {
         private String title;
@@ -70,17 +65,5 @@ public class SalesItemDto {
         private Long minPriceWanted;
         private String writer;
         private String password;
-    }
-
-    @Data
-    public static class User {
-        private String writer;
-        private String password;
-    }
-
-    @Data
-    public static class UpdateUserRequest {
-        private User recentUser;
-        private User updateUser;
     }
 }

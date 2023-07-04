@@ -1,14 +1,13 @@
 package com.likelion.market.service;
 
 import com.likelion.market.dto.PageDto;
+import com.likelion.market.dto.ResponseDto;
 import com.likelion.market.dto.SalesItemDto;
+import com.likelion.market.dto.UserDto;
 import com.likelion.market.entity.SalesItemEntity;
 import com.likelion.market.repository.SalesItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,12 +30,7 @@ public class SalesItemService {
     private final SalesItemRepository repository;
 
     // create
-    public SalesItemDto.Response createItem(SalesItemDto.CreateRequest requestDto) {
-        // 중복된 writer 입력에 대한 처리 필요
-        if (repository.existsByWriter(requestDto.getWriter())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseDto createItem(SalesItemDto.CreateRequest requestDto) {
         SalesItemEntity newItem = new SalesItemEntity();
         newItem.setTitle(requestDto.getTitle());
         newItem.setDescription(requestDto.getDescription());
@@ -46,17 +40,18 @@ public class SalesItemService {
         newItem.setStatus("판매중");
         repository.save(newItem);
 
-        SalesItemDto.Response response = new SalesItemDto.Response();
+        ResponseDto response = new ResponseDto();
         response.setMessage("등록이 완료되었습니다.");
         return response;
     }
 
     // 전체 조회
-    public PageDto readItemPaged(Integer pageNumber, Integer pageSize) {
+    public PageDto<SalesItemDto.ReadAllResponse> readItemPaged(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
         Page<SalesItemEntity> itemPage = repository.findAll(pageable);
         Page<SalesItemDto.ReadAllResponse> originItemDtoPage = itemPage.map(SalesItemDto.ReadAllResponse::fromEntity);
-        return PageDto.makePage(originItemDtoPage);
+        PageDto<SalesItemDto.ReadAllResponse> pageDto = new PageDto<>();
+        return pageDto.makePage(originItemDtoPage);
     }
 
     // id 조회
@@ -68,7 +63,7 @@ public class SalesItemService {
     }
 
     // update item
-    public SalesItemDto.Response updateItem(Long itemId, SalesItemDto.UpdateItemRequest requestDto) {
+    public ResponseDto updateItem(Long itemId, SalesItemDto.UpdateItemRequest requestDto) {
         Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
         if (optionalItem.isPresent()) {
@@ -80,16 +75,16 @@ public class SalesItemService {
                     item.setMinPriceWanted(requestDto.getMinPriceWanted());
                     repository.save(item);
 
-                    SalesItemDto.Response response = new SalesItemDto.Response();
+                    ResponseDto response = new ResponseDto();
                     response.setMessage("물품이 수정되었습니다.");
                     return response;
                 } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
             } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
-        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템이 존재하지 않음
     }
 
     // update user
-    public SalesItemDto.Response updateUser(Long itemId, SalesItemDto.UpdateUserRequest requestDto) {
+    public ResponseDto updateUser(Long itemId, UserDto.UpdateUserRequest requestDto) {
         Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
         if (optionalItem.isPresent()) {
@@ -100,12 +95,12 @@ public class SalesItemService {
                     item.setPassword(requestDto.getUpdateUser().getPassword());
                     repository.save(item);
 
-                    SalesItemDto.Response response = new SalesItemDto.Response();
+                    ResponseDto response = new ResponseDto();
                     response.setMessage("작성자 정보가 수정되었습니다.");
                     return response;
                 } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
             } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
-        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
     }
 
 //    public SalesItemDto.Response updateUser(Long itemId, String writer, String password, SalesItemDto.User requestDto) {
@@ -124,11 +119,11 @@ public class SalesItemService {
 //                    return response;
 //                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); //  비밀번호 오류
 //            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
-//        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
+//        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
 //    }
 
     // update image
-    public SalesItemDto.Response updateItemImage(Long itemId, SalesItemDto.User requestDto, MultipartFile itemImage) {
+    public ResponseDto updateItemImage(Long itemId, UserDto requestDto, MultipartFile itemImage) {
         Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
         if (optionalItem.isPresent()) {
@@ -158,15 +153,15 @@ public class SalesItemService {
                     item.setImageUrl(String.format("/static/images/%s", itemImageFileName));
                     repository.save(item);
 
-                    SalesItemDto.Response response = new SalesItemDto.Response();
+                    ResponseDto response = new ResponseDto();
                     response.setMessage("이미지가 등록되었습니다.");
                     return response;
                 } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
             } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
-        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
     }
     // delete
-    public SalesItemDto.Response deleteItem(Long itemId, SalesItemDto.User requestDto) {
+    public ResponseDto deleteItem(Long itemId, UserDto requestDto) {
         Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
 
         if (optionalItem.isPresent()) {
@@ -175,11 +170,11 @@ public class SalesItemService {
                 if (item.getPassword().equals(requestDto.getPassword())) {
                     repository.delete(item);
 
-                    SalesItemDto.Response response = new SalesItemDto.Response();
+                    ResponseDto response = new ResponseDto();
                     response.setMessage("물품을 삭제했습니다.");
                     return response;
                 } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
             } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
-        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 존재하지 않음
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
     }
 }

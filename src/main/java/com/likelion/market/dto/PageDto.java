@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Data
-public class PageDto {
-    private List<SalesItemDto.ReadAllResponse> content;
+public class PageDto<T> {
+    private List<T> content;
     private Integer totalPage;
     private Long totalElements;
     private boolean last;
@@ -16,8 +16,8 @@ public class PageDto {
     private Integer numberOfElements;
     private boolean first;
     private boolean empty;
-    public static PageDto makePage(Page<SalesItemDto.ReadAllResponse> originPage) {
-        PageDto page = new PageDto();
+    public PageDto<T> makePage(Page<T> originPage) {
+        PageDto<T> page = new PageDto<>();
         page.setContent(originPage.getContent());
         page.setTotalPage(originPage.getTotalPages());
         page.setTotalElements(originPage.getTotalElements());
