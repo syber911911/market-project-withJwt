@@ -64,18 +64,15 @@ public class CommentService {
         Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isPresent()) {
             CommentEntity comment = optionalComment.get();
-            log.info("input item id : {}, comment's item id : {}", itemId, comment.getItemId());
             if (comment.getItemId().equals(itemId)) {
-                if (comment.getWriter().equals(requestDto.getWriter())) {
-                    if (comment.getPassword().equals(requestDto.getPassword())) {
-                        comment.setContent(requestDto.getContent());
-                        commentRepository.save(comment);
+                if (comment.getWriter().equals(requestDto.getWriter()) && comment.getPassword().equals(requestDto.getPassword())) {
+                    comment.setContent(requestDto.getContent());
+                    commentRepository.save(comment);
 
-                        ResponseDto response = new ResponseDto();
-                        response.setMessage("댓글이 수정되었습니다.");
-                        return response;
-                    } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 비밀번호 오류
-                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 작성자 오류
+                    ResponseDto response = new ResponseDto();
+                    response.setMessage("댓글이 수정되었습니다.");
+                    return response;
+                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
             } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글 존재하지 않음
     }
@@ -108,7 +105,8 @@ public class CommentService {
 
     // update user
     public ResponseDto updateUser(Long itemId, Long commentId, UserDto.UpdateUserRequest requestDto) {
-        if (!salesItemRepository.existsById(itemId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+        if (!salesItemRepository.existsById(itemId))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
 
         Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
 

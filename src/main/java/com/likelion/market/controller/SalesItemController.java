@@ -20,7 +20,7 @@ public class SalesItemController {
     private final SalesItemService service;
 
     @PostMapping
-    public ResponseDto create(@RequestBody SalesItemDto.CreateRequest requestDto) {
+    public ResponseDto create(@RequestBody SalesItemDto.CreateAndUpdateRequest requestDto) {
         return service.createItem(requestDto);
     }
 
@@ -50,7 +50,7 @@ public class SalesItemController {
     }
 
     @PutMapping("/{itemId}")
-    public ResponseDto updateItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.UpdateItemRequest requestDto) {
+    public ResponseDto updateItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.CreateAndUpdateRequest requestDto) {
         return service.updateItem(itemId, requestDto);
     }
 
