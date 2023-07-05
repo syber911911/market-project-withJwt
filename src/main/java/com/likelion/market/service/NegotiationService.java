@@ -72,7 +72,7 @@ public class NegotiationService {
             PageDto<NegotiationDto.ReadNegotiationResponse> pageDto = new PageDto<>();
             return pageDto.makePage(originNegotiationDtoPage);
         } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        // 아이템에 제안이 존재하지 않거나
+        // 제안이 존재하지 않거나
         // 요청한 사용자 정보가 물품 등록자, 제안 등록자 모두 아님
     }
 
@@ -91,7 +91,7 @@ public class NegotiationService {
                 response.setMessage("제안이 수정되었습니다.");
                 return response;
             } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 해당 아이템의 제안이 아니거나 해당하는 제안이 없음
-        } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
+        } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류 및 제안이 존재하지 않음
     }
 
     // update status
@@ -116,7 +116,7 @@ public class NegotiationService {
                     } else
                         throw new ResponseStatusException(HttpStatus.IM_USED); // 이미 해당 제안이 수락, 거절 또는 확정 상태 | 이미 수락 상태인 제안이 있음
                 } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 해당 아이템의 제안이 아니거나 해당하는 제안이 없음
-            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
+            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류 및 제안이 존재하지 않음
         }
         // 확정을 위한 Request 인 경우
         // 제안 등록자의 요청
@@ -151,7 +151,7 @@ public class NegotiationService {
                     return response;
                 } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 제안이 현재 수락 상태가 아님
             } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 해당 아이템의 제안이 아님
-        } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
+        } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류 및 제안이 존재하지 않음
     }
 
     public ResponseDto negotiationUpdate(Long itemId, Long id, NegotiationDto.CreateAndUpdateRequest requestDto) {
