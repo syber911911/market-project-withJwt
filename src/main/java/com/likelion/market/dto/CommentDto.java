@@ -14,6 +14,13 @@ public class CommentDto {
     }
 
     @Data
+    public static class UpdateReplyRequest {
+        String writer;
+        String password;
+        String reply;
+    }
+
+    @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ReadCommentsResponse {
         Long id;
@@ -27,12 +34,5 @@ public class CommentDto {
             readCommentsResponse.setReply(entity.getReply());
             return readCommentsResponse;
         }
-    }
-
-    @Data
-    public static class UpdateReplyRequest {
-        String writer;
-        String password;
-        String reply;
     }
 }

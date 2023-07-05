@@ -52,7 +52,6 @@ public class SalesItemDto {
         private String title;
         private String description;
         private Long minPriceWanted;
-        private String imageUrl;
         private String status;
         private String writer;
         private String password;
