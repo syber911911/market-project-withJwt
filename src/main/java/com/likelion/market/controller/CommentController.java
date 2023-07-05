@@ -25,7 +25,7 @@ public class CommentController {
     public PageDto<CommentDto.ReadCommentsResponse> readAll(
             @PathVariable("itemId") Long itemId,
             @RequestParam(value = "page", defaultValue = "1") Integer pageNumber,
-            @RequestParam(value = "limit", defaultValue = "20") Integer pageSize
+            @RequestParam(value = "limit", defaultValue = "25") Integer pageSize
     ) {
         return service.readCommentPaged(itemId, pageNumber > 0 ? pageNumber - 1 : 0, pageSize);
     }

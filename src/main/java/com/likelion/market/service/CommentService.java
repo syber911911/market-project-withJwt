@@ -50,8 +50,8 @@ public class CommentService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
-        Page<CommentEntity> commentPage = commentRepository.findAllByItemId(itemId, pageable);
-        Page<CommentDto.ReadCommentsResponse> originCommentDtoPage = commentPage.map(CommentDto.ReadCommentsResponse::fromEntity);
+        Page<CommentEntity> commentEntityPage = commentRepository.findAllByItemId(itemId, pageable);
+        Page<CommentDto.ReadCommentsResponse> originCommentDtoPage = commentEntityPage.map(CommentDto.ReadCommentsResponse::fromEntity);
         PageDto<CommentDto.ReadCommentsResponse> pageDto = new PageDto<>();
         return pageDto.makePage(originCommentDtoPage);
     }
