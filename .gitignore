@@ -175,6 +175,12 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+<<<<<<< HEAD
 db.sqlite
 **/src/main/resources/*.sql
+=======
+*.sqlite
+application.yaml
+src/main/resources/images
+>>>>>>> develop
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
