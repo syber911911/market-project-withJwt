@@ -1,9 +1,9 @@
--- DROP TABLE sales_item;
+DROP TABLE negotiation;
 CREATE TABLE negotiation (
     id              integer primary key autoincrement,
     item_id         integer,
     suggested_price INTEGER,
     status          text,
-    content         text,
-    reply           text
+    writer          text,
+    password        text
 );
