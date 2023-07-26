@@ -1,6 +1,7 @@
 package com.likelion.market.entity;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,7 +13,9 @@ public class CustomUserDetail implements UserDetails {
     private String username;
     private String password;
     private String realName;
+    @Getter
     private String email;
+    @Getter
     private String phone;
     private String address;
 

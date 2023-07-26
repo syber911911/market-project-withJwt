@@ -2,6 +2,8 @@ package com.likelion.market.service;
 
 import com.likelion.market.entity.CustomUserDetail;
 import com.likelion.market.entity.UserEntity;
+import com.likelion.market.exception.UserException;
+import com.likelion.market.exception.UserExceptionType;
 import com.likelion.market.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,8 +26,10 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     }
     @Override
     public void createUser(UserDetails user) {
-        // 사용자가 입력한 Username 이 이미 존재하는 경우
-        if (this.userExists(user.getUsername())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        // Username, email, phone 이 중복되는 경우
+        if (this.userExists(((CustomUserDetail) user).getUsername())) throw new UserException(UserExceptionType.ALREADY_EXIST_USERNAME);
+        if (((CustomUserDetail) user).getEmail() != null && this.userEmailExists(((CustomUserDetail) user).getEmail())) throw new UserException(UserExceptionType.ALREADY_EXIST_EMAIL);
+        if (((CustomUserDetail) user).getPhone() != null && this.userPhoneExists(((CustomUserDetail) user).getPhone())) throw new UserException(UserExceptionType.ALREADY_EXIST_PHONE);
         try {
             // 입력받은 사용자 정보를 바탕으로 새로운 Entity 를 생성하고 저장
             userRepository.save(((CustomUserDetail) user).newEntity());
@@ -52,7 +56,15 @@ public class JpaUserDetailsManager implements UserDetailsManager {
 
     @Override
     public boolean userExists(String username) {
-        return false;
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean userEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean userPhoneExists(String phone) {
+        return userRepository.existsByPhone(phone);
     }
 
     @Override
