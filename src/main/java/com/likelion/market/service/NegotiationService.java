@@ -173,24 +173,24 @@ public class NegotiationService {
     }
 
     // delete suggest
-    public ResponseDto negotiationDelete(Long itemId, Long id, UserDto requestDto) {
-        if (!salesItemRepository.existsById(itemId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-
-        // 해당 제안의 작성자 정보와 Request 에 포함된 작성자 정보가 일치하는 경우
-        if (negotiationRepository.existsByIdAndWriterAndPassword(id, requestDto.getWriter(), requestDto.getPassword())) {
-            Optional<NegotiationEntity> optionalNegotiation = negotiationRepository.findByItemIdAndId(itemId, id);
-            // 해당 아이템에 속한 제안이 맞는 경우
-            if (optionalNegotiation.isPresent()) {
-                NegotiationEntity negotiation = optionalNegotiation.get();
-                negotiationRepository.delete(negotiation);
-
-                ResponseDto response = new ResponseDto();
-                response.setMessage("제안을 삭제했습니다.");
-                return response;
-            } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 해당 아이템의 제안이 아니거나 해당하는 제안이 없음
-        } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류 및 제안이 존재하지 않음
-    }
+//    public ResponseDto negotiationDelete(Long itemId, Long id, UserDto requestDto) {
+//        if (!salesItemRepository.existsById(itemId))
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+//
+//        // 해당 제안의 작성자 정보와 Request 에 포함된 작성자 정보가 일치하는 경우
+//        if (negotiationRepository.existsByIdAndWriterAndPassword(id, requestDto.getWriter(), requestDto.getPassword())) {
+//            Optional<NegotiationEntity> optionalNegotiation = negotiationRepository.findByItemIdAndId(itemId, id);
+//            // 해당 아이템에 속한 제안이 맞는 경우
+//            if (optionalNegotiation.isPresent()) {
+//                NegotiationEntity negotiation = optionalNegotiation.get();
+//                negotiationRepository.delete(negotiation);
+//
+//                ResponseDto response = new ResponseDto();
+//                response.setMessage("제안을 삭제했습니다.");
+//                return response;
+//            } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 해당 아이템의 제안이 아니거나 해당하는 제안이 없음
+//        } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류 및 제안이 존재하지 않음
+//    }
 
     // update user 추가
 }

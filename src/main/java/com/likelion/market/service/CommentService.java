@@ -104,47 +104,47 @@ public class CommentService {
     }
 
     // update user
-    public ResponseDto updateUser(Long itemId, Long commentId, UserDto.UpdateUserRequest requestDto) {
-        if (!salesItemRepository.existsById(itemId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-
-        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
-
-        if (optionalComment.isPresent()) {
-            CommentEntity comment = optionalComment.get();
-            if (comment.getItemId().equals(itemId)) {
-                if (comment.getWriter().equals(requestDto.getRecentUser().getWriter())
-                        && comment.getPassword().equals(requestDto.getRecentUser().getPassword())) {
-                    comment.setWriter(requestDto.getUpdateUser().getWriter());
-                    comment.setPassword(requestDto.getUpdateUser().getPassword());
-                    commentRepository.save(comment);
-
-                    ResponseDto response = new ResponseDto();
-                    response.setMessage("댓글 작성자 정보가 수정되었습니다.");
-                    return response;
-                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
-            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글 존재하지 않음
-    }
+//    public ResponseDto updateUser(Long itemId, Long commentId, UserDto.UpdateUserRequest requestDto) {
+//        if (!salesItemRepository.existsById(itemId))
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+//
+//        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+//
+//        if (optionalComment.isPresent()) {
+//            CommentEntity comment = optionalComment.get();
+//            if (comment.getItemId().equals(itemId)) {
+//                if (comment.getWriter().equals(requestDto.getRecentUser().getWriter())
+//                        && comment.getPassword().equals(requestDto.getRecentUser().getPassword())) {
+//                    comment.setWriter(requestDto.getUpdateUser().getWriter());
+//                    comment.setPassword(requestDto.getUpdateUser().getPassword());
+//                    commentRepository.save(comment);
+//
+//                    ResponseDto response = new ResponseDto();
+//                    response.setMessage("댓글 작성자 정보가 수정되었습니다.");
+//                    return response;
+//                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
+//            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
+//        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글 존재하지 않음
+//    }
 
     // delete
-    public ResponseDto deleteComment(Long itemId, Long commentId, UserDto requestDto) {
-        if (!salesItemRepository.existsById(itemId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-
-        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
-
-        if (optionalComment.isPresent()) {
-            CommentEntity comment = optionalComment.get();
-            if (comment.getItemId().equals(itemId)) {
-                if (comment.getWriter().equals(requestDto.getWriter()) && comment.getPassword().equals(requestDto.getPassword())) {
-                    commentRepository.delete(comment);
-
-                    ResponseDto response = new ResponseDto();
-                    response.setMessage("댓글을 삭제했습니다.");
-                    return response;
-                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
-            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글 존재하지 않음
-    }
+//    public ResponseDto deleteComment(Long itemId, Long commentId, UserDto requestDto) {
+//        if (!salesItemRepository.existsById(itemId))
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+//
+//        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+//
+//        if (optionalComment.isPresent()) {
+//            CommentEntity comment = optionalComment.get();
+//            if (comment.getItemId().equals(itemId)) {
+//                if (comment.getWriter().equals(requestDto.getWriter()) && comment.getPassword().equals(requestDto.getPassword())) {
+//                    commentRepository.delete(comment);
+//
+//                    ResponseDto response = new ResponseDto();
+//                    response.setMessage("댓글을 삭제했습니다.");
+//                    return response;
+//                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
+//            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
+//        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글 존재하지 않음
+//    }
 }

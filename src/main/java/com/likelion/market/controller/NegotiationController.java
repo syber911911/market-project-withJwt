@@ -36,10 +36,10 @@ public class NegotiationController {
         return service.negotiationUpdate(itemId, proposalId, requestDto);
     }
 
-    @DeleteMapping("/{proposalId}")
-    public ResponseDto delete(@PathVariable("itemId") Long itemId, @PathVariable("proposalId") Long proposalId, @RequestBody UserDto requestDto) {
-        return service.negotiationDelete(itemId, proposalId, requestDto);
-    }
+//    @DeleteMapping("/{proposalId}")
+//    public ResponseDto delete(@PathVariable("itemId") Long itemId, @PathVariable("proposalId") Long proposalId, @RequestBody UserDto requestDto) {
+//        return service.negotiationDelete(itemId, proposalId, requestDto);
+//    }
 
     // update User 추가
 }

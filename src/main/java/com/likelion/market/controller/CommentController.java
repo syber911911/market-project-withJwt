@@ -48,19 +48,19 @@ public class CommentController {
         return service.updateReply(itemId, commentId, requestDto);
     }
 
-    @PutMapping("/{commentId}/user")
-    public ResponseDto updateUser(@PathVariable("itemId") Long itemId,
-                                  @PathVariable("commentId") Long commentId,
-                                  @RequestBody UserDto.UpdateUserRequest requestDto
-    ){
-        return service.updateUser(itemId, commentId, requestDto);
-    }
-    @DeleteMapping("/{commentId}")
-    public ResponseDto delete(
-            @PathVariable("itemId") Long itemId,
-            @PathVariable("commentId") Long commentId,
-            @RequestBody UserDto requestDto
-    ){
-        return service.deleteComment(itemId, commentId, requestDto);
-    }
+//    @PutMapping("/{commentId}/user")
+//    public ResponseDto updateUser(@PathVariable("itemId") Long itemId,
+//                                  @PathVariable("commentId") Long commentId,
+//                                  @RequestBody UserDto.UpdateUserRequest requestDto
+//    ){
+//        return service.updateUser(itemId, commentId, requestDto);
+//    }
+//    @DeleteMapping("/{commentId}")
+//    public ResponseDto delete(
+//            @PathVariable("itemId") Long itemId,
+//            @PathVariable("commentId") Long commentId,
+//            @RequestBody UserDto requestDto
+//    ){
+//        return service.deleteComment(itemId, commentId, requestDto);
+//    }
 }

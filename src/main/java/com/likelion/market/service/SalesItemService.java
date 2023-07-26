@@ -82,22 +82,22 @@ public class SalesItemService {
     }
 
     // update user
-    public ResponseDto updateUser(Long itemId, UserDto.UpdateUserRequest requestDto) {
-        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
-
-        if (optionalItem.isPresent()) {
-            SalesItemEntity item = optionalItem.get();
-            if (item.getWriter().equals(requestDto.getRecentUser().getWriter()) && item.getPassword().equals(requestDto.getRecentUser().getPassword())) {
-                item.setWriter(requestDto.getUpdateUser().getWriter());
-                item.setPassword(requestDto.getUpdateUser().getPassword());
-                repository.save(item);
-
-                ResponseDto response = new ResponseDto();
-                response.setMessage("작성자 정보가 수정되었습니다.");
-                return response;
-            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-    }
+//    public ResponseDto updateUser(Long itemId, UserDto.UpdateUserRequest requestDto) {
+//        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
+//
+//        if (optionalItem.isPresent()) {
+//            SalesItemEntity item = optionalItem.get();
+//            if (item.getWriter().equals(requestDto.getRecentUser().getWriter()) && item.getPassword().equals(requestDto.getRecentUser().getPassword())) {
+//                item.setWriter(requestDto.getUpdateUser().getWriter());
+//                item.setPassword(requestDto.getUpdateUser().getPassword());
+//                repository.save(item);
+//
+//                ResponseDto response = new ResponseDto();
+//                response.setMessage("작성자 정보가 수정되었습니다.");
+//                return response;
+//            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
+//        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+//    }
 
 //    public SalesItemDto.Response updateUser(Long itemId, String writer, String password, SalesItemDto.User requestDto) {
 //        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
@@ -119,55 +119,55 @@ public class SalesItemService {
 //    }
 
     // update image
-    public ResponseDto updateItemImage(Long itemId, UserDto requestDto, MultipartFile itemImage) {
-        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
-
-        if (optionalItem.isPresent()) {
-            SalesItemEntity item = optionalItem.get();
-            if (item.getWriter().equals(requestDto.getWriter()) && item.getPassword().equals(requestDto.getPassword())) {
-                String imageDir = "src/main/resources/images/";
-                try {
-                    Files.createDirectories(Path.of(imageDir));
-                } catch (IOException e) {
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-                LocalDateTime createTime = LocalDateTime.now();
-
-                String originalFileName = itemImage.getOriginalFilename();
-                String[] fileNameSplit = originalFileName.split("\\.");
-                String extension = fileNameSplit[fileNameSplit.length - 1];
-                String itemImageFileName = String.format("%s_%s.%s", createTime.toString(), requestDto.getWriter(), extension);
-                String itemImagePath = imageDir + itemImageFileName;
-
-                try {
-                    itemImage.transferTo(Path.of(itemImagePath));
-                } catch (IOException e) {
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-
-                item.setImageUrl(String.format("/static/images/%s", itemImageFileName));
-                repository.save(item);
-
-                ResponseDto response = new ResponseDto();
-                response.setMessage("이미지가 등록되었습니다.");
-                return response;
-            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-    }
+//    public ResponseDto updateItemImage(Long itemId, UserDto requestDto, MultipartFile itemImage) {
+//        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
+//
+//        if (optionalItem.isPresent()) {
+//            SalesItemEntity item = optionalItem.get();
+//            if (item.getWriter().equals(requestDto.getWriter()) && item.getPassword().equals(requestDto.getPassword())) {
+//                String imageDir = "src/main/resources/images/";
+//                try {
+//                    Files.createDirectories(Path.of(imageDir));
+//                } catch (IOException e) {
+//                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//                }
+//                LocalDateTime createTime = LocalDateTime.now();
+//
+//                String originalFileName = itemImage.getOriginalFilename();
+//                String[] fileNameSplit = originalFileName.split("\\.");
+//                String extension = fileNameSplit[fileNameSplit.length - 1];
+//                String itemImageFileName = String.format("%s_%s.%s", createTime.toString(), requestDto.getWriter(), extension);
+//                String itemImagePath = imageDir + itemImageFileName;
+//
+//                try {
+//                    itemImage.transferTo(Path.of(itemImagePath));
+//                } catch (IOException e) {
+//                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//                }
+//
+//                item.setImageUrl(String.format("/static/images/%s", itemImageFileName));
+//                repository.save(item);
+//
+//                ResponseDto response = new ResponseDto();
+//                response.setMessage("이미지가 등록되었습니다.");
+//                return response;
+//            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
+//        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+//    }
 
     // delete
-    public ResponseDto deleteItem(Long itemId, UserDto requestDto) {
-        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
-
-        if (optionalItem.isPresent()) {
-            SalesItemEntity item = optionalItem.get();
-            if (item.getWriter().equals(requestDto.getWriter()) && item.getPassword().equals(requestDto.getPassword())) {
-                repository.delete(item);
-
-                ResponseDto response = new ResponseDto();
-                response.setMessage("물품을 삭제했습니다.");
-                return response;
-            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-    }
+//    public ResponseDto deleteItem(Long itemId, UserDto requestDto) {
+//        Optional<SalesItemEntity> optionalItem = repository.findById(itemId);
+//
+//        if (optionalItem.isPresent()) {
+//            SalesItemEntity item = optionalItem.get();
+//            if (item.getWriter().equals(requestDto.getWriter()) && item.getPassword().equals(requestDto.getPassword())) {
+//                repository.delete(item);
+//
+//                ResponseDto response = new ResponseDto();
+//                response.setMessage("물품을 삭제했습니다.");
+//                return response;
+//            } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
+//        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+//    }
 }

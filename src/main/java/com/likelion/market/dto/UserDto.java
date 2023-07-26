@@ -4,12 +4,11 @@ import lombok.Data;
 
 @Data
 public class UserDto {
-    private String writer;
+    private String username;
     private String password;
-
-    @Data
-    public static class UpdateUserRequest {
-        private UserDto recentUser;
-        private UserDto updateUser;
-    }
+    private String passwordCheck;
+    private String realName;
+    private String email;
+    private String phone;
+    private String address;
 }

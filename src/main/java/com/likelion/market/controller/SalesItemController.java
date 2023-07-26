@@ -37,27 +37,27 @@ public class SalesItemController {
         return service.readItemById(itemId);
     }
 
-    @PutMapping(value = "/{itemId}/image", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseDto updateImage(
-            @PathVariable("itemId") Long itemId,
-//            @RequestParam("writer") String writer,
-//            @RequestParam("password") String password,
-            @RequestPart("user") UserDto requestDto,
-            @RequestPart("image") MultipartFile itemImage
-    ){
-        log.info("writer : {}, password : {}, image : {}", requestDto.getWriter(), requestDto.getPassword(), itemImage);
-        return service.updateItemImage(itemId, requestDto, itemImage);
-    }
+//    @PutMapping(value = "/{itemId}/image", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseDto updateImage(
+//            @PathVariable("itemId") Long itemId,
+////            @RequestParam("writer") String writer,
+////            @RequestParam("password") String password,
+//            @RequestPart("user") UserDto requestDto,
+//            @RequestPart("image") MultipartFile itemImage
+//    ){
+//        log.info("writer : {}, password : {}, image : {}", requestDto.getWriter(), requestDto.getPassword(), itemImage);
+//        return service.updateItemImage(itemId, requestDto, itemImage);
+//    }
 
     @PutMapping("/{itemId}")
     public ResponseDto updateItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.CreateAndUpdateRequest requestDto) {
         return service.updateItem(itemId, requestDto);
     }
 
-    @PutMapping("/{itemId}/user")
-    public ResponseDto updateUser(@PathVariable("itemId") Long itemId, @RequestBody UserDto.UpdateUserRequest requestDto){
-        return service.updateUser(itemId, requestDto);
-    }
+//    @PutMapping("/{itemId}/user")
+//    public ResponseDto updateUser(@PathVariable("itemId") Long itemId, @RequestBody UserDto.UpdateUserRequest requestDto){
+//        return service.updateUser(itemId, requestDto);
+//    }
 
 //    @PutMapping(value = "/{itemId}", params = {"writer", "password"})
 //    public ResponseDto updateUser(
@@ -69,10 +69,10 @@ public class SalesItemController {
 //        return service.updateUser(itemId, writer, password, requestDto);
 //    }
 
-    @DeleteMapping("/{itemId}")
-    public ResponseDto deleteItem(@PathVariable("itemId") Long itemId, @RequestBody UserDto requestDto) {
-        return service.deleteItem(itemId, requestDto);
-    }
+//    @DeleteMapping("/{itemId}")
+//    public ResponseDto deleteItem(@PathVariable("itemId") Long itemId, @RequestBody UserDto requestDto) {
+//        return service.deleteItem(itemId, requestDto);
+//    }
 }
 
 
