@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionAdvice {
     @ExceptionHandler(BaseException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ResponseDto> handlerBaseException(BaseException exception) {
         ResponseDto response = new ResponseDto();
         response.setMessage(exception.getExceptionType().getErrorMessage());

@@ -5,7 +5,13 @@ import com.likelion.market.dto.UserDto;
 import com.likelion.market.entity.CustomUserDetail;
 import com.likelion.market.exception.UserException;
 import com.likelion.market.exception.UserExceptionType;
+import com.likelion.market.jwt.JwtRequestDto;
+import com.likelion.market.jwt.JwtTokenDto;
+import com.likelion.market.jwt.JwtTokenUtils;
+import com.likelion.market.service.JpaUserDetailsManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +34,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseDto register(@RequestBody UserDto user) {
         ResponseDto response = new ResponseDto();
-        if (user.getPassword().equals(user.getPasswordCheck()))
+        if (!user.getPassword().equals(user.getPasswordCheck()))
             throw new UserException(UserExceptionType.UNMATCHED_CHECK_PASSWORD);
         userDetailsManager.createUser(CustomUserDetail.builder()
                 .username(user.getUsername())
@@ -41,5 +47,10 @@ public class UserController {
         );
         response.setMessage("success create user");
         return response;
+    }
+
+    @PostMapping("/login")
+    public JwtTokenDto login(@RequestBody JwtRequestDto request) {
+        return ((JpaUserDetailsManager) userDetailsManager).loginUser(request.getUsername(), request.getPassword());
     }
 }
