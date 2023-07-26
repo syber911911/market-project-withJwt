@@ -27,6 +27,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     @Override
     public void createUser(UserDetails user) {
         // Username, email, phone 이 중복되는 경우
+        // username, email, phone 중복 체크 url 을 따로 제작해 분리하는 것도 고려
         if (this.userExists(((CustomUserDetail) user).getUsername())) throw new UserException(UserExceptionType.ALREADY_EXIST_USERNAME);
         if (((CustomUserDetail) user).getEmail() != null && this.userEmailExists(((CustomUserDetail) user).getEmail())) throw new UserException(UserExceptionType.ALREADY_EXIST_EMAIL);
         if (((CustomUserDetail) user).getPhone() != null && this.userPhoneExists(((CustomUserDetail) user).getPhone())) throw new UserException(UserExceptionType.ALREADY_EXIST_PHONE);
