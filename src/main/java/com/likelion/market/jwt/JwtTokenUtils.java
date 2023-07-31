@@ -1,11 +1,14 @@
 package com.likelion.market.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
+import com.likelion.market.exception.CustomJwtException;
+import com.likelion.market.exception.JwtExceptionType;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -41,13 +44,29 @@ public class JwtTokenUtils {
         return jwtToken;
     }
 
-    public boolean validate(String token) {
+    public Authentication getAuthentication(String token) {
+        String username = this.getUsernameFromToken(token);
+        return new UsernamePasswordAuthenticationToken(username, token, null);
+    }
+
+    public void validate(String authHeader) throws CustomJwtException {
+        if (authHeader == null)
+            throw new CustomJwtException(JwtExceptionType.NULL_TOKEN_ERROR);
+        if (!authHeader.startsWith("Bearer "))
+            throw new CustomJwtException(JwtExceptionType.TOKEN_TYPE_ERROR);
         try {
+            String token = authHeader.split(" ")[1];
             jwtParser.parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            log.warn("invalid jwt : {}", e.getClass());
-            return false;
+        } catch (SignatureException ex) {
+            throw new CustomJwtException(JwtExceptionType.JWT_SIGNATURE_ERROR);
+        } catch (MalformedJwtException ex) {
+            throw new CustomJwtException(JwtExceptionType.JWT_MALFORMED_ERROR);
+        } catch (ExpiredJwtException ex) {
+            throw new CustomJwtException(JwtExceptionType.JWT_EXPIRED_ERROR);
+        } catch (UnsupportedJwtException ex) {
+            throw new CustomJwtException(JwtExceptionType.UNSUPPORTED_JWT_ERROR);
+        } catch (IllegalArgumentException ex) {
+            throw new CustomJwtException(JwtExceptionType.ILLEGAL_ARGUMENT_JWT_ERROR);
         }
     }
 
@@ -55,5 +74,9 @@ public class JwtTokenUtils {
         return jwtParser
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String getUsernameFromToken(String token) {
+        return this.parseClaims(token).getSubject();
     }
 }
