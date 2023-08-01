@@ -5,6 +5,7 @@ import com.likelion.market.jwt.JwtTokenFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,10 +31,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authHttpRequest ->
                         authHttpRequest
-                                .requestMatchers("/items/**")
-                                .authenticated()
                                 .anyRequest()
-                                .permitAll()
+                                .authenticated()
                 )
                 .sessionManagement(sessionManagement ->
                         sessionManagement
@@ -46,7 +45,10 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/auth/**");
+        return (web) -> web
+                .ignoring()
+                .requestMatchers("/auth/**")
+                .requestMatchers(HttpMethod.GET,"/items/**");
     }
 
     @Bean

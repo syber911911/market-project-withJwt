@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -45,7 +46,7 @@ public class JwtTokenUtils {
     }
 
     public Authentication getAuthentication(String token) {
-        String username = this.getUsernameFromToken(token);
+        String username = this.getUsernameFromJwt(token);
         return new UsernamePasswordAuthenticationToken(username, token, null);
     }
 
@@ -76,7 +77,7 @@ public class JwtTokenUtils {
                 .getBody();
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getUsernameFromJwt(String token) {
         return this.parseClaims(token).getSubject();
     }
 }

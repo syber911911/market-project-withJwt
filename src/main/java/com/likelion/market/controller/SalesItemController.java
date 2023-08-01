@@ -8,6 +8,7 @@ import com.likelion.market.service.SalesItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +21,9 @@ public class SalesItemController {
     private final SalesItemService service;
 
     @PostMapping
-    public ResponseDto create(@RequestBody SalesItemDto.CreateAndUpdateRequest requestDto) {
-        return service.createItem(requestDto);
+    public ResponseDto create(@RequestBody SalesItemDto.CreateAndUpdateRequest requestDto, @AuthenticationPrincipal String username) {
+        log.info("username : {}", username);
+        return service.createItem(requestDto, username);
     }
 
     @GetMapping
@@ -33,25 +35,27 @@ public class SalesItemController {
     }
 
     @GetMapping("/{itemId}")
-    public SalesItemDto.ReadByIdResponse read(@PathVariable("itemId") Long itemId) {
+    public SalesItemDto.ReadByIdResponse read(@PathVariable("itemId") Long itemId, @AuthenticationPrincipal String username) {
+        log.info("username : {}", username);
         return service.readItemById(itemId);
     }
 
-//    @PutMapping(value = "/{itemId}/image", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-//    public ResponseDto updateImage(
-//            @PathVariable("itemId") Long itemId,
-////            @RequestParam("writer") String writer,
-////            @RequestParam("password") String password,
+    @PutMapping(value = "/{itemId}/image", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseDto updateImage(
+            @PathVariable("itemId") Long itemId,
+//            @RequestParam("writer") String writer,
+//            @RequestParam("password") String password,
 //            @RequestPart("user") UserDto requestDto,
-//            @RequestPart("image") MultipartFile itemImage
-//    ){
-//        log.info("writer : {}, password : {}, image : {}", requestDto.getWriter(), requestDto.getPassword(), itemImage);
-//        return service.updateItemImage(itemId, requestDto, itemImage);
-//    }
+            @RequestPart("image") MultipartFile itemImage,
+            @AuthenticationPrincipal String username
+    ){
+        log.info("username : {}, image : {}", username, itemImage);
+        return service.updateItemImage(itemId, itemImage, username);
+    }
 
     @PutMapping("/{itemId}")
-    public ResponseDto updateItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.CreateAndUpdateRequest requestDto) {
-        return service.updateItem(itemId, requestDto);
+    public ResponseDto updateItem(@PathVariable("itemId") Long itemId, @RequestBody SalesItemDto.CreateAndUpdateRequest requestDto, @AuthenticationPrincipal String username) {
+        return service.updateItem(itemId, requestDto, username);
     }
 
 //    @PutMapping("/{itemId}/user")
@@ -69,10 +73,10 @@ public class SalesItemController {
 //        return service.updateUser(itemId, writer, password, requestDto);
 //    }
 
-//    @DeleteMapping("/{itemId}")
-//    public ResponseDto deleteItem(@PathVariable("itemId") Long itemId, @RequestBody UserDto requestDto) {
-//        return service.deleteItem(itemId, requestDto);
-//    }
+    @DeleteMapping("/{itemId}")
+    public ResponseDto deleteItem(@PathVariable("itemId") Long itemId, @AuthenticationPrincipal String username) {
+        return service.deleteItem(itemId, username);
+    }
 }
 
 

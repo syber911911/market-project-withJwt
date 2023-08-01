@@ -24,10 +24,13 @@ public class SalesItemEntity {
 
     private String status;
 
-    @Column(unique = true)
     @NotNull(message = "writer must not be null")
     private String writer;
 
     @NotNull(message = "password must not be null")
     private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }
