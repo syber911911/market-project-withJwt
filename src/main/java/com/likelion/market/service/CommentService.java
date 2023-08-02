@@ -3,9 +3,11 @@ package com.likelion.market.service;
 import com.likelion.market.dto.CommentDto;
 import com.likelion.market.dto.PageDto;
 import com.likelion.market.dto.ResponseDto;
-import com.likelion.market.dto.UserDto;
 import com.likelion.market.entity.CommentEntity;
 import com.likelion.market.entity.SalesItemEntity;
+import com.likelion.market.entity.UserEntity;
+import com.likelion.market.exception.UserException;
+import com.likelion.market.exception.UserExceptionType;
 import com.likelion.market.repository.CommentRepository;
 import com.likelion.market.repository.SalesItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,17 +28,22 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final SalesItemRepository salesItemRepository;
+    private final JpaUserDetailsManager jpaUserDetailsManager;
 
     // create comment
-    public ResponseDto createComment(Long itemId, CommentDto.CreateAndUpdateCommentRequest requestDto) {
-        if (!salesItemRepository.existsById(itemId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+    public ResponseDto createComment(Long itemId, CommentDto.CreateAndUpdateCommentRequest requestDto, String username) {
+        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
+        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+
+        SalesItemEntity salesItem = optionalSalesItem.get();
+        UserEntity user = jpaUserDetailsManager.getUser(username);
 
         CommentEntity comment = new CommentEntity();
-        comment.setItemId(itemId);
+        comment.setSalesItem(salesItem);
         comment.setWriter(requestDto.getWriter());
         comment.setPassword(requestDto.getPassword());
         comment.setContent(requestDto.getContent());
+        comment.setUser(user);
         commentRepository.save(comment);
 
         ResponseDto response = new ResponseDto();
@@ -46,61 +53,88 @@ public class CommentService {
 
     // readAll comment
     public PageDto<CommentDto.ReadCommentsResponse> readCommentPaged(Long itemId, Integer pageNumber, Integer pageSize) {
-        if (!salesItemRepository.existsById(itemId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
+        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        SalesItemEntity salesItem = optionalSalesItem.get();
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
-        Page<CommentEntity> commentEntityPage = commentRepository.findAllByItemId(itemId, pageable);
+        Page<CommentEntity> commentEntityPage = commentRepository.findAllBySalesItem(salesItem, pageable);
         Page<CommentDto.ReadCommentsResponse> originCommentDtoPage = commentEntityPage.map(CommentDto.ReadCommentsResponse::fromEntity);
         PageDto<CommentDto.ReadCommentsResponse> pageDto = new PageDto<>();
         return pageDto.makePage(originCommentDtoPage);
     }
 
     // update comment
-    public ResponseDto updateComment(Long itemId, Long commentId, CommentDto.CreateAndUpdateCommentRequest requestDto) {
-        if (!salesItemRepository.existsById(itemId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+    public ResponseDto updateComment(Long itemId, Long commentId, CommentDto.CreateAndUpdateCommentRequest requestDto, String username) {
+        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
+        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        SalesItemEntity salesItem = optionalSalesItem.get();
 
         Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
-        if (optionalComment.isPresent()) {
-            CommentEntity comment = optionalComment.get();
-            if (comment.getItemId().equals(itemId)) {
-                if (comment.getWriter().equals(requestDto.getWriter()) && comment.getPassword().equals(requestDto.getPassword())) {
-                    comment.setContent(requestDto.getContent());
-                    commentRepository.save(comment);
+        if (optionalComment.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글이 존재하지 않음
 
-                    ResponseDto response = new ResponseDto();
-                    response.setMessage("댓글이 수정되었습니다.");
-                    return response;
-                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
-            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글 존재하지 않음
+        UserEntity user = jpaUserDetailsManager.getUser(username);
+
+        CommentEntity comment = optionalComment.get();
+        if (comment.getSalesItem().equals(salesItem)) {
+            if (comment.getUser().equals(user)) {
+                comment.setContent(requestDto.getContent());
+                commentRepository.save(comment);
+
+                ResponseDto response = new ResponseDto();
+                response.setMessage("댓글이 수정되었습니다.");
+                return response;
+            } else throw new UserException(UserExceptionType.WRONG_USER); // 해당 user 가 작성한 댓글이 아님
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
     }
 
     // update reply
-    public ResponseDto updateReply(Long itemId, Long commentId, CommentDto.UpdateReplyRequest requestDto) {
-        Optional<SalesItemEntity> optionalItem = salesItemRepository.findById(itemId);
-        SalesItemEntity item;
-
-        if (optionalItem.isPresent()) {
-            item = optionalItem.get();
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+    public ResponseDto updateReply(Long itemId, Long commentId, CommentDto.UpdateReplyRequest requestDto, String username) {
+        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
+        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
+        SalesItemEntity salesItem = optionalSalesItem.get();
 
         Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        CommentEntity comment = optionalComment.get();
 
-        if (optionalComment.isPresent()) {
-            CommentEntity comment = optionalComment.get();
-            if (comment.getItemId().equals(itemId)) {
-                if (item.getWriter().equals(requestDto.getWriter()) && item.getPassword().equals(requestDto.getPassword())) {
-                    comment.setReply(requestDto.getReply());
-                    commentRepository.save(comment);
+        UserEntity user = jpaUserDetailsManager.getUser(username);
 
-                    ResponseDto response = new ResponseDto();
-                    response.setMessage("댓글에 답변이 추가되었습니다.");
-                    return response;
-                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
-            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글 존재하지 않음
+        if (comment.getSalesItem().equals(salesItem)) {
+            if (salesItem.getUser().equals(user)) {
+                comment.setReply(requestDto.getReply());
+                commentRepository.save(comment);
+
+                ResponseDto response = new ResponseDto();
+                response.setMessage("댓글에 답변이 추가되었습니다.");
+                return response;
+            } else throw new UserException(UserExceptionType.WRONG_USER); // 해당 아이템 작성자가 아님
+        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
+    }
+
+    // delete
+    public ResponseDto deleteComment(Long itemId, Long commentId, String username) {
+        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
+        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템이 존재하지 않음
+        SalesItemEntity salesItem = optionalSalesItem.get();
+
+        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글이 존재하지 않음
+        CommentEntity comment = optionalComment.get();
+
+        UserEntity user = jpaUserDetailsManager.getUser(username);
+
+        if (comment.getSalesItem().equals(salesItem)) {
+            if (comment.getUser().equals(user)) {
+                commentRepository.delete(comment);
+
+                ResponseDto response = new ResponseDto();
+                response.setMessage("댓글을 삭제했습니다.");
+                return response;
+            } throw new UserException(UserExceptionType.WRONG_USER); // 해당 댓글을 작성한 사용자가 아님
+        } throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 해당 아이템의 댓글이 아님
     }
 
     // update user
@@ -121,27 +155,6 @@ public class CommentService {
 //
 //                    ResponseDto response = new ResponseDto();
 //                    response.setMessage("댓글 작성자 정보가 수정되었습니다.");
-//                    return response;
-//                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
-//            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님
-//        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글 존재하지 않음
-//    }
-
-    // delete
-//    public ResponseDto deleteComment(Long itemId, Long commentId, UserDto requestDto) {
-//        if (!salesItemRepository.existsById(itemId))
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-//
-//        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
-//
-//        if (optionalComment.isPresent()) {
-//            CommentEntity comment = optionalComment.get();
-//            if (comment.getItemId().equals(itemId)) {
-//                if (comment.getWriter().equals(requestDto.getWriter()) && comment.getPassword().equals(requestDto.getPassword())) {
-//                    commentRepository.delete(comment);
-//
-//                    ResponseDto response = new ResponseDto();
-//                    response.setMessage("댓글을 삭제했습니다.");
 //                    return response;
 //                } else throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); // 인증 오류
 //            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 댓글이 해당 아이템의 댓글이 아님

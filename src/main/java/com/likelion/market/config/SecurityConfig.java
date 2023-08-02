@@ -48,7 +48,8 @@ public class SecurityConfig {
         return (web) -> web
                 .ignoring()
                 .requestMatchers("/auth/**")
-                .requestMatchers(HttpMethod.GET,"/items/**");
+                .requestMatchers(HttpMethod.GET,"/items/**")
+                .requestMatchers(HttpMethod.GET, "/comments/**");
     }
 
     @Bean

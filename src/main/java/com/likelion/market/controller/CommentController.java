@@ -7,6 +7,7 @@ import com.likelion.market.dto.UserDto;
 import com.likelion.market.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -17,8 +18,8 @@ public class CommentController {
     private final CommentService service;
 
     @PostMapping
-    public ResponseDto create(@PathVariable("itemId") Long itemId, @RequestBody CommentDto.CreateAndUpdateCommentRequest requestDto) {
-        return service.createComment(itemId, requestDto);
+    public ResponseDto create(@PathVariable Long itemId, @RequestBody CommentDto.CreateAndUpdateCommentRequest requestDto, @AuthenticationPrincipal String username) {
+        return service.createComment(itemId, requestDto, username);
     }
 
     @GetMapping
@@ -34,18 +35,20 @@ public class CommentController {
     public ResponseDto update(
             @PathVariable("itemId") Long itemId,
             @PathVariable("commentId") Long commentId,
-            @RequestBody CommentDto.CreateAndUpdateCommentRequest requestDto
+            @RequestBody CommentDto.CreateAndUpdateCommentRequest requestDto,
+            @AuthenticationPrincipal String username
     ) {
-        return service.updateComment(itemId, commentId, requestDto);
+        return service.updateComment(itemId, commentId, requestDto, username);
     }
 
     @PutMapping("/{commentId}/reply")
     public ResponseDto updateReply(
             @PathVariable("itemId") Long itemId,
             @PathVariable("commentId") Long commentId,
-            @RequestBody CommentDto.UpdateReplyRequest requestDto
+            @RequestBody CommentDto.UpdateReplyRequest requestDto,
+            @AuthenticationPrincipal String username
     ) {
-        return service.updateReply(itemId, commentId, requestDto);
+        return service.updateReply(itemId, commentId, requestDto, username);
     }
 
 //    @PutMapping("/{commentId}/user")
@@ -55,12 +58,13 @@ public class CommentController {
 //    ){
 //        return service.updateUser(itemId, commentId, requestDto);
 //    }
-//    @DeleteMapping("/{commentId}")
-//    public ResponseDto delete(
-//            @PathVariable("itemId") Long itemId,
-//            @PathVariable("commentId") Long commentId,
-//            @RequestBody UserDto requestDto
-//    ){
-//        return service.deleteComment(itemId, commentId, requestDto);
-//    }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseDto delete(
+            @PathVariable("itemId") Long itemId,
+            @PathVariable("commentId") Long commentId,
+            @AuthenticationPrincipal String username
+    ){
+        return service.deleteComment(itemId, commentId, username);
+    }
 }
