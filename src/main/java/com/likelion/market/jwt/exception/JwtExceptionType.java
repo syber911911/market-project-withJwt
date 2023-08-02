@@ -3,6 +3,7 @@ package com.likelion.market.jwt.exception;
 import com.likelion.market.global.exception.BaseExceptionType;
 import org.springframework.http.HttpStatus;
 
+// jwt 검증과정에서 발생할 수 있는 ExceptionType 을 enum 으로 관리
 public enum JwtExceptionType implements BaseExceptionType {
     JWT_SIGNATURE_ERROR(HttpStatus.UNAUTHORIZED, "JWT 의 서명이 유효하지 않습니다"),
     JWT_MALFORMED_ERROR(HttpStatus.UNAUTHORIZED, "JWT 의 형식이 올바르지 않습니다"),

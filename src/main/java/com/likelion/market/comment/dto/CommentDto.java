@@ -7,21 +7,20 @@ import lombok.Data;
 @Data
 public class CommentDto {
     @Data
+    // comment 생성 및 update 시에 사용자가 보내는 requestBody 를 받는 Dto
     public static class CreateAndUpdateCommentRequest{
-        String writer;
-        String password;
         String content;
     }
 
     @Data
+    // comment 에 reply 를 추가할 때 사용자가 보내는 requestBody 를 받는 Dto
     public static class UpdateReplyRequest {
-        String writer;
-        String password;
         String reply;
     }
 
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    // read comment 를 하는 경우 사용자에게 제공될 Dto
     public static class ReadCommentsResponse {
         Long id;
         String content;

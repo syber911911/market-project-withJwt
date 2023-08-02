@@ -31,8 +31,10 @@ public class UserController {
     @PostMapping("/register")
     public ResponseDto register(@RequestBody UserDto user) {
         ResponseDto response = new ResponseDto();
+        // 사용할 비밀번호와 확인용 비밀번호가 일치하는지 확인
         if (!user.getPassword().equals(user.getPasswordCheck()))
             throw new UserException(UserExceptionType.UNMATCHED_CHECK_PASSWORD);
+        // user 등록 진행
         userDetailsManager.createUser(CustomUserDetail.builder()
                 .username(user.getUsername())
                 .password(passwordEncoder.encode(user.getPassword()))

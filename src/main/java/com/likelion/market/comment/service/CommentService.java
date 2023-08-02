@@ -29,19 +29,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final SalesItemRepository salesItemRepository;
     private final JpaUserDetailsManager jpaUserDetailsManager;
     private final SalesItemService salesItemService;
 
     // create comment
     public ResponseDto createComment(Long itemId, CommentDto.CreateAndUpdateCommentRequest requestDto, String username) {
+        // 해당 item 글 조회
         SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        // 해당 user 조회
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         CommentEntity comment = new CommentEntity();
         comment.setSalesItem(salesItem);
-        comment.setWriter(requestDto.getWriter());
-        comment.setPassword(requestDto.getPassword());
         comment.setContent(requestDto.getContent());
         comment.setUser(user);
         commentRepository.save(comment);
@@ -53,6 +52,7 @@ public class CommentService {
 
     // readAll comment
     public PageDto<CommentDto.ReadCommentsResponse> readCommentPaged(Long itemId, Integer pageNumber, Integer pageSize) {
+        // 해당 item 조회
         SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
@@ -64,12 +64,17 @@ public class CommentService {
 
     // update comment
     public ResponseDto updateComment(Long itemId, Long commentId, CommentDto.CreateAndUpdateCommentRequest requestDto, String username) {
+        // 해당 item 조회
         SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        // 해당 comment 조회
         CommentEntity comment = this.getComment(commentId);
+        // 해당 user 조회
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         if (comment.getSalesItem().equals(salesItem)) {
+            // 해당 item 과 comment 가 서로 연관관계가 있는지 확인
             if (comment.getUser().equals(user)) {
+                // 해당 comment 작성자가 보낸 요청인지 확인
                 comment.setContent(requestDto.getContent());
                 commentRepository.save(comment);
 
@@ -82,12 +87,17 @@ public class CommentService {
 
     // update reply
     public ResponseDto updateReply(Long itemId, Long commentId, CommentDto.UpdateReplyRequest requestDto, String username) {
+        // 해당 item 조회
         SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        // 해당 comment 조회
         CommentEntity comment = this.getComment(commentId);
+        // 해당 user 조회
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         if (comment.getSalesItem().equals(salesItem)) {
+            // 해당 item 과 comment 가 서로 연관관계가 있는 확인
             if (salesItem.getUser().equals(user)) {
+                // 해당 item 을 등록한 사용자가 보낸 요청인지 확인
                 comment.setReply(requestDto.getReply());
                 commentRepository.save(comment);
 
@@ -100,12 +110,17 @@ public class CommentService {
 
     // delete
     public ResponseDto deleteComment(Long itemId, Long commentId, String username) {
+        // 해당 item 조회
         SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        // 해당 comment 조회
         CommentEntity comment = this.getComment(commentId);
+        // 해당 user 조회
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         if (comment.getSalesItem().equals(salesItem)) {
+            // 해당 item 과 comment 가 연관관계가 있는지 확인
             if (comment.getUser().equals(user)) {
+                // comment 를 작성한 사용자가 보낸 요청인지 확인
                 commentRepository.delete(comment);
 
                 ResponseDto response = new ResponseDto();
@@ -115,6 +130,7 @@ public class CommentService {
         } throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 해당 아이템의 댓글이 아님
     }
 
+    // commentId 를 통해 commentEntity 를 조회 후 반환하는 메서드
     public CommentEntity getComment(Long commentId) {
         Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글이 존재하지 않음

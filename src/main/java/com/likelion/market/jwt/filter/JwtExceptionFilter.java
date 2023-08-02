@@ -19,6 +19,7 @@ import java.io.IOException;
 @Component
 public class JwtExceptionFilter extends OncePerRequestFilter {
     @Override
+    // 다음에 실행되는 JwtTokenFilter 에서 발생하는 Exception 을 catch 해 setErrorMessage 메서드 실행
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
@@ -28,6 +29,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     }
 
     public void setErrorMessage(HttpServletResponse response, HttpStatus httpStatus, String errorMessage) {
+        // 예외가 발생하면 해당 예외의 메세지를 response 에 셋팅
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.setStatus(httpStatus.value());

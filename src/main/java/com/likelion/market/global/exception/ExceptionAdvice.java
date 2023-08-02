@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionAdvice {
     @ExceptionHandler(BaseException.class)
+    // BaseException 의 구현체가 되는 Exception 들을 핸들링
     public ResponseEntity<ResponseDto> handlerBaseException(BaseException exception) {
         ResponseDto response = new ResponseDto();
         response.setMessage(exception.getExceptionType().getErrorMessage());
