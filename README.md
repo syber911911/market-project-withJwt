@@ -17,8 +17,7 @@ Spring Boot Mini Project - 중고 거래 플랫폼 api
 
 ## ⚙️ 구현 기능
 ### DB ERD
-<img src="https://github.com/likelion-backend-5th/MiniProject_Basic_LeeHeejun/assets/64578367/83890da0-83b5-455f-88e0-5ed1d1ca9ecb" width="500" height="500">
-ERD 교환
+<img src="https://github.com/likelion-backend-5th/Project_1_LeeHeeJun/assets/64578367/2231d3b3-ea24-4bf5-8681-648076c2b3d6" width="500" height="500">
 
 ### 회원 가입, 로그인, 인증 및 JWT 발급
  기능 | HTTP METHOD | URL
