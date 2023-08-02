@@ -9,7 +9,7 @@ import com.likelion.market.salesItem.service.SalesItemService;
 import com.likelion.market.user.entity.UserEntity;
 import com.likelion.market.user.exception.UserException;
 import com.likelion.market.user.exception.UserExceptionType;
-import com.likelion.market.repository.CommentRepository;
+import com.likelion.market.comment.repository.CommentRepository;
 import com.likelion.market.salesItem.repository.SalesItemRepository;
 import com.likelion.market.user.service.JpaUserDetailsManager;
 import lombok.RequiredArgsConstructor;

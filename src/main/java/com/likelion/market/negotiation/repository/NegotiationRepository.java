@@ -1,4 +1,4 @@
-package com.likelion.market.repository;
+package com.likelion.market.negotiation.repository;
 
 import com.likelion.market.negotiation.entity.NegotiationEntity;
 import com.likelion.market.salesItem.entity.SalesItemEntity;

@@ -1,4 +1,4 @@
-package com.likelion.market.repository;
+package com.likelion.market.comment.repository;
 
 import com.likelion.market.comment.entity.CommentEntity;
 import com.likelion.market.salesItem.entity.SalesItemEntity;
