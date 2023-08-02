@@ -2,6 +2,7 @@ package com.likelion.market.config;
 
 import com.likelion.market.jwt.filter.JwtExceptionFilter;
 import com.likelion.market.jwt.filter.JwtTokenFilter;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authHttpRequest ->
                         authHttpRequest
+                                .requestMatchers("/static/**")
+                                .permitAll()
                                 // filter 에서 검증이 필요없는 요청은 따로 ignore 처리를 하기 때문에
                                 // 모든 요청에 대해서 authenticated 처리
                                 .anyRequest()
@@ -56,7 +59,8 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**")
                 .requestMatchers(HttpMethod.GET,"/items/{itemId}")
                 .requestMatchers(HttpMethod.GET, "/items")
-                .requestMatchers(HttpMethod.GET, "/items/{itemId}/comments");
+                .requestMatchers(HttpMethod.GET, "/items/{itemId}/comments")
+                .requestMatchers("/static/**");
     }
 
     @Bean

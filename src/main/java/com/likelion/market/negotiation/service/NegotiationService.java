@@ -54,7 +54,7 @@ public class NegotiationService {
             ResponseDto response = new ResponseDto();
             response.setMessage("구매 제안이 등록되었습니다.");
             return response;
-        } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 아이템 작성자가 제안을 생성
+        } else throw new UserException(UserExceptionType.WRONG_USER); // 아이템 작성자가 제안을 생성
     }
 
     // read
