@@ -1,7 +1,8 @@
 package com.likelion.market.jwt;
 
-import com.likelion.market.exception.CustomJwtException;
-import com.likelion.market.exception.JwtExceptionType;
+import com.likelion.market.jwt.exception.CustomJwtException;
+import com.likelion.market.jwt.exception.JwtExceptionType;
+import com.likelion.market.jwt.dto.JwtTokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;

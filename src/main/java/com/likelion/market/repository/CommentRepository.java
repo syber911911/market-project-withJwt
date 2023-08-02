@@ -1,7 +1,7 @@
 package com.likelion.market.repository;
 
-import com.likelion.market.entity.CommentEntity;
-import com.likelion.market.entity.SalesItemEntity;
+import com.likelion.market.comment.entity.CommentEntity;
+import com.likelion.market.salesItem.entity.SalesItemEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

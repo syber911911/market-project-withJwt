@@ -1,7 +1,7 @@
 package com.likelion.market.config;
 
-import com.likelion.market.jwt.JwtExceptionFilter;
-import com.likelion.market.jwt.JwtTokenFilter;
+import com.likelion.market.jwt.filter.JwtExceptionFilter;
+import com.likelion.market.jwt.filter.JwtTokenFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
