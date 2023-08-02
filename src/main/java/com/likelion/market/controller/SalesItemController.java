@@ -35,8 +35,7 @@ public class SalesItemController {
     }
 
     @GetMapping("/{itemId}")
-    public SalesItemDto.ReadByIdResponse read(@PathVariable("itemId") Long itemId, @AuthenticationPrincipal String username) {
-        log.info("username : {}", username);
+    public SalesItemDto.ReadByIdResponse read(@PathVariable("itemId") Long itemId) {
         return service.readItemById(itemId);
     }
 

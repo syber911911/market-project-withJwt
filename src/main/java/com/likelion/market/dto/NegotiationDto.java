@@ -2,6 +2,7 @@ package com.likelion.market.dto;
 
 import com.likelion.market.annotations.Status;
 import com.likelion.market.entity.NegotiationEntity;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 

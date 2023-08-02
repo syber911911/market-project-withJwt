@@ -14,6 +14,7 @@ public class StatusValidator implements ConstraintValidator<Status, String> {
     public void initialize(Status constraintAnnotation) {
         statusList = new ArrayList<>();
         statusList.addAll(Arrays.asList(constraintAnnotation.statusList()));
+        statusList.add(null);
     }
 
     @Override
