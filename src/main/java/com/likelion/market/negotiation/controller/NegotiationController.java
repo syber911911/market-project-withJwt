@@ -41,7 +41,7 @@ public class NegotiationController {
     }
 
     @DeleteMapping("/{proposalId}")
-    public ResponseDto delete(@PathVariable("itemId") Long itemId, @PathVariable("proposalId") Long proposalId, @RequestBody UserDto requestDto, @AuthenticationPrincipal String username) {
-        return service.negotiationDelete(itemId, proposalId, requestDto, username);
+    public ResponseDto delete(@PathVariable("itemId") Long itemId, @PathVariable("proposalId") Long proposalId, @AuthenticationPrincipal String username) {
+        return service.negotiationDelete(itemId, proposalId, username);
     }
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 public class SalesItemDto {
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    // read 의 결과를 담을 Dto
     public static class ReadByIdResponse {
         private String title;
         private String description;
@@ -27,6 +28,7 @@ public class SalesItemDto {
 
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    // readAll 의 결과를 담을 Dto
     public static class ReadAllResponse {
         private Long id;
         private String title;
@@ -48,12 +50,10 @@ public class SalesItemDto {
     }
 
     @Data
+    // 사용자가 Create 혹은 Update 를 요청할 때 requestBody Dto
     public static class CreateAndUpdateRequest {
         private String title;
         private String description;
         private Long minPriceWanted;
-        private String status;
-        private String writer;
-        private String password;
     }
 }

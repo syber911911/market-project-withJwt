@@ -3,6 +3,7 @@ package com.likelion.market.negotiation.service;
 import com.likelion.market.negotiation.dto.NegotiationDto;
 import com.likelion.market.global.dto.PageDto;
 import com.likelion.market.global.dto.ResponseDto;
+import com.likelion.market.salesItem.service.SalesItemService;
 import com.likelion.market.user.dto.UserDto;
 import com.likelion.market.negotiation.entity.NegotiationEntity;
 import com.likelion.market.salesItem.entity.SalesItemEntity;
@@ -32,13 +33,11 @@ public class NegotiationService {
     private final SalesItemRepository salesItemRepository;
     private final NegotiationRepository negotiationRepository;
     private final JpaUserDetailsManager jpaUserDetailsManager;
+    private final SalesItemService salesItemService;
 
     // create suggest
     public ResponseDto createNegotiation(Long itemId, NegotiationDto.CreateAndUpdateRequest requestDto, String username) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템이 존재하지 않음
-        SalesItemEntity salesItem = optionalSalesItem.get();
-
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         if (!salesItem.getUser().equals(user)) {
@@ -47,8 +46,6 @@ public class NegotiationService {
             negotiation.setStatus("제안");
             negotiation.setUser(user);
             negotiation.setSalesItem(salesItem);
-//        negotiation.setWriter(requestDto.getWriter());
-//        negotiation.setPassword(requestDto.getPassword());
             negotiationRepository.save(negotiation);
 
             ResponseDto response = new ResponseDto();
@@ -58,20 +55,9 @@ public class NegotiationService {
     }
 
     // read
-    public PageDto<NegotiationDto.ReadNegotiationResponse> readNegotiationPaged(
-            Long itemId,
-//            String writer,
-//            String password,
-            Integer pageNumber,
-            Integer pageSize,
-            String username
-    ) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        SalesItemEntity salesItem = optionalSalesItem.get();
-
+    public PageDto<NegotiationDto.ReadNegotiationResponse> readNegotiationPaged(Long itemId, Integer pageNumber, Integer pageSize, String username) {
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
         UserEntity user = jpaUserDetailsManager.getUser(username);
-        log.info(user.getUsername());
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
         if (salesItem.getUser().equals(user)) {
@@ -149,15 +135,9 @@ public class NegotiationService {
         } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 해당 물품의 제안이 아님
     }
 
-    public ResponseDto negotiationUpdate(Long itemId, Long id, NegotiationDto.CreateAndUpdateRequest requestDto, String username) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-        SalesItemEntity salesItem = optionalSalesItem.get();
-
-        Optional<NegotiationEntity> optionalNegotiation = negotiationRepository.findById(id);
-        if (optionalNegotiation.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 제안이 존재하지 않음
-        NegotiationEntity negotiation = optionalNegotiation.get();
-
+    public ResponseDto negotiationUpdate(Long itemId, Long negotiationId, NegotiationDto.CreateAndUpdateRequest requestDto, String username) {
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        NegotiationEntity negotiation = this.getNegotiation(negotiationId);
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         // 한 사용자가 가격의 수정과 제안의 수정 두 가지 모두를 요청하는 경우
@@ -177,15 +157,9 @@ public class NegotiationService {
     }
 
     // delete suggest
-    public ResponseDto negotiationDelete(Long itemId, Long id, UserDto requestDto, String username) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템이 존재하지 않음
-        SalesItemEntity salesItem = optionalSalesItem.get();
-
-        Optional<NegotiationEntity> optionalNegotiation = negotiationRepository.findById(id);
-        if (optionalNegotiation.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 제안이 존재하지 않음
-        NegotiationEntity negotiation = optionalNegotiation.get();
-
+    public ResponseDto negotiationDelete(Long itemId, Long negotiationId, String username) {
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        NegotiationEntity negotiation = this.getNegotiation(negotiationId);
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         if (negotiation.getSalesItem().equals(salesItem)) {
@@ -197,5 +171,11 @@ public class NegotiationService {
                 return response;
             } else throw new UserException(UserExceptionType.WRONG_USER); // 해당 제안의 작성자가 아님
         } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 해당 아이템의 제안이 아님
+    }
+
+    public NegotiationEntity getNegotiation(Long negotiationId) {
+        Optional<NegotiationEntity> optionalNegotiation = negotiationRepository.findById(negotiationId);
+        if (optionalNegotiation.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 제안이 존재하지 않음
+        return optionalNegotiation.get();
     }
 }

@@ -5,6 +5,7 @@ import com.likelion.market.global.dto.PageDto;
 import com.likelion.market.global.dto.ResponseDto;
 import com.likelion.market.comment.entity.CommentEntity;
 import com.likelion.market.salesItem.entity.SalesItemEntity;
+import com.likelion.market.salesItem.service.SalesItemService;
 import com.likelion.market.user.entity.UserEntity;
 import com.likelion.market.user.exception.UserException;
 import com.likelion.market.user.exception.UserExceptionType;
@@ -30,13 +31,11 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final SalesItemRepository salesItemRepository;
     private final JpaUserDetailsManager jpaUserDetailsManager;
+    private final SalesItemService salesItemService;
 
     // create comment
     public ResponseDto createComment(Long itemId, CommentDto.CreateAndUpdateCommentRequest requestDto, String username) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-
-        SalesItemEntity salesItem = optionalSalesItem.get();
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         CommentEntity comment = new CommentEntity();
@@ -54,10 +53,7 @@ public class CommentService {
 
     // readAll comment
     public PageDto<CommentDto.ReadCommentsResponse> readCommentPaged(Long itemId, Integer pageNumber, Integer pageSize) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
-        SalesItemEntity salesItem = optionalSalesItem.get();
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
         Page<CommentEntity> commentEntityPage = commentRepository.findAllBySalesItem(salesItem, pageable);
@@ -68,17 +64,10 @@ public class CommentService {
 
     // update comment
     public ResponseDto updateComment(Long itemId, Long commentId, CommentDto.CreateAndUpdateCommentRequest requestDto, String username) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
-        SalesItemEntity salesItem = optionalSalesItem.get();
-
-        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
-        if (optionalComment.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글이 존재하지 않음
-
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        CommentEntity comment = this.getComment(commentId);
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
-        CommentEntity comment = optionalComment.get();
         if (comment.getSalesItem().equals(salesItem)) {
             if (comment.getUser().equals(user)) {
                 comment.setContent(requestDto.getContent());
@@ -93,14 +82,8 @@ public class CommentService {
 
     // update reply
     public ResponseDto updateReply(Long itemId, Long commentId, CommentDto.UpdateReplyRequest requestDto, String username) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템 존재하지 않음
-        SalesItemEntity salesItem = optionalSalesItem.get();
-
-        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
-        if (optionalComment.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        CommentEntity comment = optionalComment.get();
-
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        CommentEntity comment = this.getComment(commentId);
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         if (comment.getSalesItem().equals(salesItem)) {
@@ -117,14 +100,8 @@ public class CommentService {
 
     // delete
     public ResponseDto deleteComment(Long itemId, Long commentId, String username) {
-        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
-        if (optionalSalesItem.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 아이템이 존재하지 않음
-        SalesItemEntity salesItem = optionalSalesItem.get();
-
-        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
-        if (optionalComment.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글이 존재하지 않음
-        CommentEntity comment = optionalComment.get();
-
+        SalesItemEntity salesItem = salesItemService.getSalesItem(itemId);
+        CommentEntity comment = this.getComment(commentId);
         UserEntity user = jpaUserDetailsManager.getUser(username);
 
         if (comment.getSalesItem().equals(salesItem)) {
@@ -136,6 +113,12 @@ public class CommentService {
                 return response;
             } throw new UserException(UserExceptionType.WRONG_USER); // 해당 댓글을 작성한 사용자가 아님
         } throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 해당 아이템의 댓글이 아님
+    }
+
+    public CommentEntity getComment(Long commentId) {
+        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND); // 댓글이 존재하지 않음
+        return optionalComment.get();
     }
 
     // update user

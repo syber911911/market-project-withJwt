@@ -15,20 +15,13 @@ public class SalesItemEntity {
 
     @NotNull(message = "title must not be null")
     private String title;
-
     private String description;
-
     private String imageUrl;
 
     @NotNull(message = "price must not be null")
     private Long minPriceWanted;
-
     private String status;
-
-    @NotNull(message = "writer must not be null")
     private String writer;
-
-    @NotNull(message = "password must not be null")
     private String password;
 
     @ManyToOne
