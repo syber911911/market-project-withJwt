@@ -1,7 +1,3 @@
-# 멋쟁이 사자처럼 백엔트 스쿨 5기 - LEEHEEJUN
-# ♻️멋사마켓♻️
-Spring Boot Mini Project - 중고 거래 플랫폼 api
-
 ## 📒프로젝트 개요
 중고 거래 판매자가 물품을 등록하고, 댓글을 통해 구매자와 소통, 구매 제안과 수락 할 수 있는 기능을 구현
 
@@ -14,6 +10,15 @@ Spring Boot Mini Project - 중고 거래 플랫폼 api
 - `SQLite`
 - `IntelliJ`
 - `MacOS`
+
+## 🧨 주요 Issue
+### JWT Token 검증 시 발생하는 예외처리
+- Token 검증 시 발생하는 예외를 처리하는 Filter 를 제작해 커스텀 예외처리를 진행 시도 / 해당 과정에서 Token 검증이 필요하지 않은 요청에 대해 Token 검증이 진행되면서 예외를 발생시키고 요청이 중단되는 문제
+  - Filter 대상이 아닌 요청은 제외하도록 처리
+ 
+- Filter 에서 제외한 요청이지만 지속적으로 Filter 가 적용되는 문제
+  - Filter 로직을 Component 로 등록하면서 Application Filter Chain 과 Security Filter Chain 에 동시에 등록되면서 발생
+  - Filter 를 Component annotation 을 활용해 Component 로 등록하는 것이 아닌 Filter Chain 에서 직접 객체를 생성해 등록하는 방법과, Application Filter Chain 에 등록된 Token 검증 Filter 비활성화 하는 방법. 두 가지 중 후자의 방법을 선택해 해결
 
 ## ⚙️ 구현 기능
 ### DB ERD
